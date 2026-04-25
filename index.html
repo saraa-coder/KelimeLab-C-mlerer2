@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkçe Mix</title>
+
+    <style>
+    /* NUEVA PALETA ARMÓNICA: TEAL + CORAL + CREMA */
+    body { 
+        font-family: 'Segoe UI', Roboto, sans-serif; 
+        display: flex; 
+        justify-content: center; 
+        align-items: center; 
+        min-height: 100vh; 
+        margin: 0; 
+        background-color: #0f172a;
+        color: #e2e8f0;
+    }
+
+    .game-card { 
+        background: #1e293b; 
+        width: 95%; 
+        max-width: 500px; 
+        padding: 20px; 
+        border-radius: 12px; 
+        text-align: center; 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        border: 1px solid #334155;
+    }
+    
+    h2 { 
+        margin: 0 0 15px 0; 
+        font-size: 18px; 
+        font-weight: 500; 
+        color: #f8fafc; 
+    }
+
+    /* PALABRAS Y OPCIONES */
+    .word, .option-btn { 
+        display: inline-block; 
+        margin: 3px; 
+        padding: 10px 14px; 
+        cursor: pointer; 
+        border-radius: 6px; 
+        font-weight: 600; 
+        font-size: 14px; 
+        border: 1px solid #475569;
+        background: #334155;
+        color: #e2e8f0;
+        transition: all 0.2s;
+    }
+
+    .word:hover, .option-btn:hover { 
+        background: #475569; 
+        border-color: #2dd4bf;
+    }
+
+    /* ESTADOS */
+    .correct { 
+        background: #14b8a6 !important;
+        color: white !important; 
+        border-color: #2dd4bf !important; 
+    }
+
+    .wrong { 
+        background: #f43f5e !important;
+        color: white !important; 
+        border-color: #fb7185 !important; 
+    }
+
+    /* ZONA RESPUESTA */
+    #answer-zone { 
+        min-height: 50px; 
+        margin: 15px 0; 
+        padding: 10px; 
+        border-radius: 8px; 
+        font-size: 19px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        flex-wrap: wrap; 
+        gap: 6px; 
+        background: #0f172a;
+        border: 1px solid #2dd4bf;
+        color: #2dd4bf;
+    }
+    
+    /* BOTONES */
+    .controls { 
+        display: flex; 
+        gap: 8px; 
+        justify-content: center; 
+        margin-top: 15px; 
+    }
+
+    button { 
+        padding: 10px 18px; 
+        border: none; 
+        border-radius: 6px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        font-size: 13px; 
+        color: #0f172a;
+        transition: transform 0.1s;
+    }
+
+    button:active { transform: scale(0.95); }
+
+    .undo-btn { background: #94a3b8; }
+    .check-btn { background: #2dd4bf; }
+    .next-btn { background: #fda4af; }
+
+    /* INFO BOX */
+    #info-box { 
+        margin-top: 15px; 
+        padding: 15px; 
+        border-radius: 8px; 
+        display: none; 
+        text-align: left; 
+        font-size: 14px; 
+        background: rgba(15, 23, 42, 0.6); 
+        border: 1px solid #334155;
+    }
+
+    .verb-highlight { 
+        color: #2dd4bf; 
+        font-weight: bold; 
+        margin-top: 4px; 
+    }
+
+    .grammar-note { 
+        font-size: 12px; 
+        color: #94a3b8; 
+        border-top: 1px solid #334155; 
+        padding-top: 8px; 
+        margin-top: 8px; 
+    }
+    </style>
+</head>
+
+<body>
+
+<div class="game-card">
+    <h2 id="game-title">Cümleyi düzenle</h2>
+
+    <div id="words-container"></div>
+    <div id="answer-zone"></div>
+    <div id="options-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;"></div>
+
+    <div class="controls">
+        <button id="undo-btn" class="undo-btn" onclick="resetCurrent()">Geri</button>
+        <button id="check-btn" class="check-btn" onclick="check()">Kontrol et</button>
+        <button class="next-btn" onclick="loadNewGame()">Sonraki</button>
+    </div>
+
+    <div id="info-box">
+        <div id="result-msg" style="font-size: 18px; font-weight: bold; margin-bottom: 5px;"></div>
+        <div><strong>Original:</strong> <span id="correct-text"></span></div>
+        <div><em>Traducción:</em> <span id="trans-text"></span></div>
+        <div id="verb-text" class="verb-highlight"></div> 
+        <div id="grammar-text" class="grammar-note"></div>
+    </div>
+</div>
+
+<script>
+let currentIdx = 0;
+let userWords = [];
+let locked = false;
+let gameMode = ""; 
+
+const sentences = [
+{
+"c": "Siz genelde eski müzikleri keyifle dinliyorsunuz",
+"s": "Normalmente escucháis música antigua con placer",
+"g": "El verbo 'dinlemek' rige Acusativo definido (-i)",
+"v": "dinlemek: escuchar",
+"h": "müzikleri",
+"alt": ["müziklere", "müziklerde", "müziklerden"]
+},
+{
+"c": "Onlar büyük parkta yavaş yavaş yürüyor",
+"s": "Caminan lentamente por el parque grande",
+"g": "Uso del caso Locativo (-ta) para indicar lugar",
+"v": "yürümek: caminar",
+"h": "parkta",
+"alt": ["parkı", "parka", "parktan"]
+},
+{
+"c": "Ben sabahları sessizce hazırlanıyorum",
+"s": "Por las mañanas me preparo en silencio",
+"g": "Formación de adverbios de modo con el sufijo -ce/-ca",
+"v": "hazırlanmak: prepararse",
+"h": "sessizce",
+"alt": ["sessiz", "sessizle", "sessizde"]
+},
+{
+  "c": "Sen hızlıca evden çıkıyorsun",
+  "s": "Sales de casa rápidamente",
+  "g": "El verbo 'çıkmak' (salir) rige el caso Ablativo (-den/-dan)",
+  "v": "çıkmak: salir",
+  "h": "evden",
+  "alt": ["evde", "eve", "evi"]
+},
+{
+  "c": "O yeni filmi merakla izliyor",
+  "s": "Ve la nueva película con curiosidad",
+  "g": "Uso del Acusativo definido (-i) requerido por el adjetivo 'yeni' y el verbo 'izlemek'",
+  "v": "izlemek: ver/mirar",
+  "h": "filmi",
+  "alt": ["film", "filme", "filmden"]
+},
+{
+  "c": "Biz hafta sonu uzun yürüyüşler yapıyoruz",
+  "s": "Hacemos largas caminatas el fin de semana",
+  "g": "El sustantivo debe concordar lógicamente con el adjetivo 'uzun' (largo)",
+  "v": "yapmak: hacer",
+  "h": "yürüyüşler",
+  "alt": ["yürüyüşe", "yürüyüşten", "yürüyüşle"]
+},
+{
+  "c": "Siz sabah kahvaltısını birlikte yapıyorsunuz",
+  "s": "Desayunáis juntos (hacéis el desayuno de la mañana)",
+  "g": "Compuesto nominal (sabah kahvaltısı) + n de unión + acusativo (-ı)",
+  "v": "yapmak: hacer",
+  "h": "kahvaltısını",
+  "alt": ["kahvaltısında", "kahvaltısına", "kahvaltısıyla"]
+},
+{
+  "c": "Onlar küçük kafede rahatça oturuyor",
+  "s": "Se sientan cómodamente en el pequeño café",
+  "g": "Uso del Locativo (-de) para indicar permanencia en un lugar",
+  "v": "oturmak: sentarse/vivir",
+  "h": "kafede",
+  "alt": ["kafeyi", "kafeye", "kafeden"]
+},
+{
+  "c": "Ben dersleri dikkatlice takip ediyorum",
+  "s": "Sigo las clases con atención",
+  "g": "El verbo 'takip etmek' rige el caso Acusativo (-i/-ı)",
+  "v": "takip etmek: seguir",
+  "h": "dersleri",
+  "alt": ["derslere", "derslerde", "derslerden"]
+},
+{
+  "c": "Sen bu soruyu kolayca çözüyorsun",
+  "s": "Resuelves esta pregunta fácilmente",
+  "g": "El verbo 'çözmek' (resolver) rige el caso Acusativo definido (-y-u)",
+  "v": "çözmek: resolver",
+  "h": "soruyu",
+  "alt": ["soruya", "soruda", "sorudan"]
+},
+{
+  "c": "O akşam haberleri sessizce izliyor",
+  "s": "Ve las noticias por la noche en silencio",
+  "g": "El verbo 'izlemek' rige el caso Acusativo definido (-i/-ı)",
+  "v": "izlemek: ver/mirar",
+  "h": "haberleri",
+  "alt": ["haberlere", "haberlerde", "haberlerden"]
+},
+{
+  "c": "Biz yazın sahilde uzun süre kalıyoruz",
+  "s": "En verano nos quedamos mucho tiempo en la playa",
+  "g": "El verbo 'kalmak' (quedarse) rige el caso Locativo (-de/-da) para indicar lugar",
+  "v": "kalmak: quedarse",
+  "h": "sahilde",
+  "alt": ["sahili", "sahile", "sahilden"]
+},
+{
+  "c": "Siz yeni konuları yavaş yavaş öğreniyorsunuz",
+  "s": "Aprendéis nuevos temas poco a poco",
+  "g": "El verbo 'öğrenmek' rige el caso Acusativo definido plural (-ları)",
+  "v": "öğrenmek: aprender",
+  "h": "konuları",
+  "alt": ["konulara", "konularda", "konulardan"]
+},
+{
+  "c": "Onlar şehir merkezinde hızlıca dolaşıyor",
+  "s": "Pasean rápido por el centro de la ciudad",
+  "g": "Compuesto nominal (merkez-i) + n de unión + Locativo (-de)",
+  "v": "dolaşmak: pasear/deambular",
+  "h": "merkezinde",
+  "alt": ["merkezini", "merkezine", "merkezinden"]
+},
+{
+  "c": "Ben sabahları kısa bir kahvaltı yapıyorum",
+  "s": "Hago un desayuno corto por las mañanas",
+  "g": "Objeto directo indefinido (sin sufijo) tras el adjetivo 'kısa'",
+  "v": "yapmak: hacer",
+  "h": "kahvaltı",
+  "alt": ["kahvaltıyı", "kahvaltının", "kahvaltılar"]
+},
+{
+  "c": "Sen arkadaşlarınla sık sık konuşuyorsun",
+  "s": "Hablas a menudo con tus amigos",
+  "g": "Sufijo instrumental/comitativo (-la) sobre base posesiva plural",
+  "v": "konuşmak: hablar",
+  "h": "arkadaşlarınla",
+  "alt": ["arkadaşlarına", "arkadaşlarında", "arkadaşlarını"]
+},
+{
+  "c": "O evde sessizce kitap okuyor",
+  "s": "Lee libros en casa en silencio",
+  "g": "Formación de adverbios de modo con el sufijo -ce/-ca",
+  "v": "okumak: leer",
+  "h": "sessizce",
+  "alt": ["sessiz", "sessizle", "sessizde"]
+},
+{
+  "c": "Biz büyük masada birlikte yemek yiyoruz",
+  "s": "Comemos juntos en una mesa grande",
+  "g": "El lugar de la acción requiere el caso Locativo (-da/-de)",
+  "v": "yemek yemek: comer",
+  "h": "masada",
+  "alt": ["masayı", "masaya", "masadan"]
+},
+{
+  "c": "Siz sabahları erken kalkıyorsunuz",
+  "s": "Os levantáis temprano por la mañana",
+  "g": "Uso de adverbios temporales opuestos y sufijo -ları para rutina",
+  "v": "kalkmak: levantarse",
+  "h": "erken",
+  "alt": ["erkene", "yavaşça", "sıcak"]
+},
+{
+  "c": "Onlar akşamları televizyon izliyor",
+  "s": "Ven la televisión por la noche",
+  "g": "Objeto directo base. El verbo 'izlemek' requiere un objeto visual",
+  "v": "izlemek: ver/mirar",
+  "h": "televizyon",
+  "alt": ["televizyonu", "elma", "radyo"]
+},
+{
+  "c": "Ben hızlıca hazırlanıp dışarı çıkıyorum",
+  "s": "Me preparo rápido y salgo",
+  "g": "Uso del gerundio '-ıp' para conectar dos acciones consecutivas",
+  "v": "çıkmak: salir",
+  "h": "hazırlanıp",
+  "alt": ["hazırlanmak", "uyuyup", "düşüp"]
+},
+{
+  "c": "Sen dikkatlice not alıyorsun",
+  "s": "Tomas notas con cuidado",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "not almak: tomar notas",
+  "h": "dikkatlice",
+  "alt": ["dikkatli", "tuzluca", "mavi"]
+},
+{
+  "c": "O uzun yolu yavaş yavaş yürüyor",
+  "s": "Camina lentamente por el camino largo",
+  "g": "Tipo: Gramatical (Acusativo vs otros casos)",
+  "v": "yürümek: caminar",
+  "h": "yolu",
+  "alt": ["yola", "yolun", "yolda"]
+},
+{
+  "c": "Biz genelde evde dinleniyoruz",
+  "s": "Normalmente descansamos en casa",
+  "g": "Tipo: Semántica (Lógica de contexto)",
+  "v": "dinlenmek: descansar",
+  "h": "evde",
+  "alt": ["sınavda", "otobüste", "derste"]
+},
+{
+  "c": "Siz bu işi kolayca yapıyorsunuz",
+  "s": "Hacéis este trabajo fácilmente",
+  "g": "Tipo: Gramatical (Adverbio de modo -ca vs otras formas)",
+  "v": "yapmak: hacer",
+  "h": "kolayca",
+  "alt": ["kolay", "kolayda", "kolaydan"]
+},
+{
+  "c": "Onlar yeni yerleri merakla keşfediyor",
+  "s": "Descubren nuevos lugares con curiosidad",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "keşfetmek: descubrir",
+  "h": "merakla",
+  "alt": ["meraklı", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben hafta içi erken yatıyorum",
+  "s": "Me acuesto temprano entre semana",
+  "g": "Tipo: Semántica (Lógica temporal)",
+  "v": "yatmak: acostarse",
+  "h": "erken",
+  "alt": ["yorgun", "tuzlu", "mavi"]
+},
+{
+  "c": "Sen akşamları kitap okuyorsun",
+  "s": "Lees libros por la noche",
+  "g": "Tipo: Gramatical (Objeto indefinido vs casos específicos)",
+  "v": "okumak: leer",
+  "h": "kitap",
+  "alt": ["kitabı", "kitaba", "kitaptan"]
+},
+{
+  "c": "O sabah kahvesini sessizce içiyor",
+  "s": "Bebe su café por la mañana en silencio",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "içmek: beber",
+  "h": "kahvesini",
+  "alt": ["kahve", "bulutu", "sessiz"]
+},
+{
+  "c": "Biz büyük projeyi birlikte yapıyoruz",
+  "s": "Hacemos el gran proyecto juntos",
+  "g": "Tipo: Semántica (Lógica de contexto laboral/escolar)",
+  "v": "yapmak: hacer",
+  "h": "projeyi",
+  "alt": ["çorbayı", "denizi", "rüzgarı"]
+},
+{
+  "c": "Siz eski fotoğraflara dikkatlice bakıyorsunuz",
+  "s": "Miráis fotos antiguas con atención",
+  "g": "Tipo: Gramatical (Dativo requerido por 'bakmak' vs otros casos)",
+  "v": "bakmak: mirar",
+  "h": "fotoğraflara",
+  "alt": ["fotoğrafları", "fotoğraflarda", "fotoğraflardan"]
+},
+{
+  "c": "Onlar parkta uzun süre oturuyor",
+  "s": "Se sientan mucho tiempo en el parque",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "oturmak: sentarse/vivir",
+  "h": "parkta",
+  "alt": ["parkı", "bulutta", "çorbada"]
+},
+{
+  "c": "Ben ders çalışırken müzik dinliyorum",
+  "s": "Escucho música mientras estudio",
+  "g": "Tipo: Semántica (Lógica de actividad mientras se estudia)",
+  "v": "dinlemek: escuchar",
+  "h": "müzik",
+  "alt": ["uyku", "yemek", "futbol"]
+},
+{
+  "c": "Sen dışarıda hızlıca yiyorsun",
+  "s": "Comes rápido fuera",
+  "g": "Tipo: Gramatical (Locativo -da vs otros casos)",
+  "v": "yemek: comer",
+  "h": "dışarıda",
+  "alt": ["dışarıyı", "dışarıya", "dışarıdan"]
+},
+{
+  "c": "O evde rahatça dinleniyor",
+  "s": "Descansa cómodamente en casa",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "dinlenmek: descansar",
+  "h": "rahatça",
+  "alt": ["rahat", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz hafta sonu arkadaşlarla buluşuyoruz",
+  "s": "Nos reunimos con amigos el fin de semana",
+  "g": "Tipo: Semántica (Lógica de reunión social)",
+  "v": "buluşmak: reunirse/quedar",
+  "h": "arkadaşlarla",
+  "alt": ["duvarlarla", "bulutlarla", "taşlarla"]
+},
+{
+  "c": "Siz yeni filmi birlikte izliyorsunuz",
+  "s": "Veis la nueva película juntos",
+  "g": "Tipo: Gramatical (Acusativo definido -i vs otros casos)",
+  "v": "izlemek: ver/mirar",
+  "h": "filmi",
+  "alt": ["filme", "filmde", "filmden"]
+},
+{
+  "c": "Onlar sahilde yavaşça yürüyüş yapıyor",
+  "s": "Pasean lentamente por la playa",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "yürüyüş yapmak: pasear/hacer una caminata",
+  "h": "yavaşça",
+  "alt": ["yavaş", "lezzetlice", "tuzluca"]
+},
+{
+  "c": "Ben sabahları erken kalkmayı seviyorum",
+  "s": "Me gusta levantarme temprano por las mañanas",
+  "g": "Tipo: Semántica (Lógica de rutina matutina)",
+  "v": "sevmek: amar/gustar",
+  "h": "kalkmayı",
+  "alt": ["uyumayı", "acıkmayı", "yorulmayı"]
+},
+{
+  "c": "Sen kahveyi sıcak sıcak içiyorsun",
+  "s": "Bebes el café bien caliente",
+  "g": "Tipo: Gramatical (Reduplicación de adjetivo vs otras formas)",
+  "v": "içmek: beber",
+  "h": "sıcak sıcak",
+  "alt": ["sıcakta", "sıcaktan", "sıcaklar"]
+},
+{
+  "c": "O kitabı dikkatle bitiriyor",
+  "s": "Termina el libro con atención",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "bitirmek: terminar",
+  "h": "dikkatle",
+  "alt": ["dikkatli", "tuzluca", "mavi"]
+},
+{
+  "c": "Biz akşamları uzun sohbet ediyoruz",
+  "s": "Charlamos mucho por la noche (tenemos una larga charla)",
+  "g": "Tipo: Semántica (Lógica del verbo compuesto 'etmek')",
+  "v": "sohbet etmek: charlar",
+  "h": "sohbet",
+  "alt": ["elma", "ayakkabı", "bulut"]
+},
+{
+  "c": "Siz genelde sakin müzik dinliyorsunuz",
+  "s": "Normalmente escucháis música tranquila",
+  "g": "Tipo: Gramatical (Adjetivo base vs otras formas)",
+  "v": "dinlemek: escuchar",
+  "h": "sakin",
+  "alt": ["sakince", "sakinde", "sakinden"]
+},
+{
+  "c": "Onlar sabah sporunu birlikte yapıyor",
+  "s": "Hacen deporte por la mañana juntos",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "yapmak: hacer",
+  "h": "sporunu",
+  "alt": ["spor", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben kısa molalarla çalışıyorum",
+  "s": "Trabajo con pequeñas pausas",
+  "g": "Tipo: Semántica (Lógica de ritmo de trabajo)",
+  "v": "çalışmak: trabajar/estudiar",
+  "h": "molalarla",
+  "alt": ["uykularla", "rüyalarla", "bulutlarla"]
+},
+{
+  "c": "Sen yeni kelimeleri hızlıca öğreniyorsun",
+  "s": "Aprendes palabras nuevas rápidamente",
+  "g": "Tipo: Gramatical (Acusativo plural -leri vs otros casos)",
+  "v": "öğrenmek: aprender",
+  "h": "kelimeleri",
+  "alt": ["kelimelere", "kelimelerde", "kelimelerden"]
+},
+{
+  "c": "O şehre yavaş yavaş alışıyor",
+  "s": "Se está acostumbrando a la ciudad poco a poco",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "alışmak: acostumbrarse",
+  "h": "şehre",
+  "alt": ["şehri", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz evde sıcak çay içiyoruz",
+  "s": "Bebemos té caliente en casa",
+  "g": "Tipo: Semántica (Lógica de bebida que se sirve caliente)",
+  "v": "içmek: beber",
+  "h": "çay",
+  "alt": ["tuz", "ekmek", "bulut"]
+},
+{
+  "c": "Siz dikkatlice plan yapıyorsunuz",
+  "s": "Planificáis con cuidado (hacéis planes)",
+  "g": "Tipo: Gramatical (Adverbio de modo -ce vs adjetivo base)",
+  "v": "plan yapmak: planificar/hacer planes",
+  "h": "dikkatlice",
+  "alt": ["dikkatli", "dikkatten", "dikkatte"]
+},
+{
+  "c": "Onlar büyük salonda toplanıyor",
+  "s": "Se reúnen en el gran salón",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "toplanmak: reunirse",
+  "h": "salonda",
+  "alt": ["salonu", "lezzetlice", "tuzluca"]
+},
+{
+  "c": "Ben akşamları sessizce düşünüyorum",
+  "s": "Pienso en silencio por la noche",
+  "g": "Tipo: Semántica (Lógica de actividad introspectiva)",
+  "v": "düşünmek: pensar",
+  "h": "sessizce",
+  "alt": ["tuzlu", "mavi", "hızlıca"]
+},
+{
+  "c": "Sen sabahları biraz geç kalkıyorsun",
+  "s": "Te levantas un poco tarde por la mañana",
+  "g": "Tipo: Gramatical (Adverbio temporal vs sufijo de caso)",
+  "v": "kalkmak: levantarse",
+  "h": "geç",
+  "alt": ["geçe", "geçte", "geçten"]
+},
+{
+  "c": "O uzun videoları dikkatlice izliyor",
+  "s": "Ve vídeos largos con atención",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "izlemek: ver/mirar",
+  "h": "videoları",
+  "alt": ["videolara", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz rahat bir ortamda çalışıyoruz",
+  "s": "Trabajamos en un ambiente tranquilo",
+  "g": "Tipo: Semántica (Lógica de contexto para trabajar)",
+  "v": "çalışmak: trabajar/estudiar",
+  "h": "ortamda",
+  "alt": ["çorbada", "denizde", "bulutta"]
+},
+{
+  "c": "Siz eski arkadaşlarla sık görüşüyorsunuz",
+  "s": "Os veis a menudo con viejos amigos",
+  "g": "Tipo: Gramatical (Adverbio de frecuencia vs sufijos de caso)",
+  "v": "görüşmek: verse/reunirse",
+  "h": "sık",
+  "alt": ["sıkta", "sıkla", "sıkı"]
+},
+{
+  "c": "Onlar hızlıca yemek hazırlıyor",
+  "s": "Preparan la comida rápidamente",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "hazırlamak: preparar",
+  "h": "hızlıca",
+  "alt": ["hızlı", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben çok iyi bir öğrenciyim",
+  "s": "Soy un muy buen estudiante",
+  "g": "Tipo: Semántica (Lógica de identidad en contexto de aprendizaje)",
+  "v": "öğrenci olmak: ser estudiante",
+  "h": "öğrenciyim",
+  "alt": ["masayım", "elmayım", "bulutum"]
+},
+{
+  "c": "Sen çok çalışkan bir insansın",
+  "s": "Eres una persona muy trabajadora",
+  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona -sin vs otros sufijos)",
+  "v": "insan olmak: ser persona",
+  "h": "insansın",
+  "alt": ["insanım", "insanız", "insanlar"]
+},
+{
+  "c": "O çok iyi bir öğretmen",
+  "s": "Es un muy buen profesor",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "öğretmen olmak: ser profesor",
+  "h": "öğretmen",
+  "alt": ["öğretmence", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz mutlu bir aileyiz",
+  "s": "Somos una familia feliz",
+  "g": "Tipo: Semántica (Lógica de relación afectiva)",
+  "v": "aile olmak: ser una familia",
+  "h": "aileyiz",
+  "alt": ["meyveyiz", "eşyayız", "binayız"]
+},
+{
+  "c": "Siz çok dikkatli insanlarsınız",
+  "s": "Sois personas muy cuidadosas",
+  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona plural -sınız vs otros sujetos)",
+  "v": "insan olmak: ser personas",
+  "h": "insanlarsınız",
+  "alt": ["insanlarsın", "insanlarız", "insanlardım"]
+},
+{
+  "c": "Onlar çok iyi arkadaşlar",
+  "s": "Son muy buenos amigos",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "arkadaş olmak: ser amigos",
+  "h": "arkadaşlar",
+  "alt": ["arkadaştan", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben bugün biraz yorgunum",
+  "s": "Hoy estoy un poco cansado",
+  "g": "Tipo: Semántica (Lógica de estado físico incompatible)",
+  "v": "yorgun olmak: estar cansado",
+  "h": "yorgunum",
+  "alt": ["pembeyim", "tuzluyum", "ekşiyim"]
+},
+{
+  "c": "Sen gerçekten çok sabırlısın",
+  "s": "Eres realmente muy paciente",
+  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona -sın vs otros sujetos)",
+  "v": "sabırlı olmak: ser paciente",
+  "h": "sabırlısın",
+  "alt": ["sabırlıyım", "sabırlıyız", "sabırlılar"]
+},
+{
+  "c": "O evde yalnız",
+  "s": "Está solo en casa",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "yalnız olmak: estar solo",
+  "h": "yalnız",
+  "alt": ["yalnızca", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz burada hazırız",
+  "s": "Estamos listos aquí",
+  "g": "Tipo: Semántica (Lógica de estado situacional)",
+  "v": "hazır olmak: estar listo",
+  "h": "hazırız",
+  "alt": ["pahalıyız", "tuzluyuz", "mavisiniz"]
+},
+{
+  "c": "Ben sabahları kahveyi sıcak içiyorum",
+  "s": "Por las mañanas bebo el café caliente",
+  "g": "Tipo: Gramatical (Acusativo definido -i vs otros casos)",
+  "v": "içmek: beber",
+  "h": "kahveyi",
+  "alt": ["kahveye", "kahvede", "kahveden"]
+},
+{
+  "c": "Sen okula genelde erken gidiyorsun",
+  "s": "Sueles ir temprano a la escuela",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "gitmek: ir",
+  "h": "okula",
+  "alt": ["okulun", "tuzluca", "pahalının"]
+},
+{
+  "c": "O kitabı dikkatlice okuyor",
+  "s": "Lee el libro con atención",
+  "g": "Tipo: Semántica (Lógica de modo incompatible)",
+  "v": "okumak: leer",
+  "h": "dikkatlice",
+  "alt": ["lezzetlice", "tuzluca", "mavi"]
+},
+{
+  "c": "Biz akşam yemeğini birlikte yiyoruz",
+  "s": "Cenamos juntos por la noche",
+  "g": "Tipo: Gramatical (Acusativo posesivo -i-n-i vs otros casos)",
+  "v": "yemek: comer/cenar",
+  "h": "yemeğini",
+  "alt": ["yemeğine", "yemeğinde", "yemeğinden"]
+},
+{
+  "c": "Siz eski şarkıları keyifle dinliyorsunuz",
+  "s": "Disfrutáis escuchando canciones antiguas",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "dinlemek: escuchar",
+  "h": "keyifle",
+  "alt": ["keyifli", "tuzluca", "pahalının"]
+},
+{
+  "c": "Onlar parkta yavaş yavaş yürüyor",
+  "s": "Caminan lentamente por el parque",
+  "g": "Tipo: Semántica (Lógica de movimiento físico)",
+  "v": "yürümek: caminar",
+  "h": "yavaş yavaş",
+  "alt": ["acı acı", "tuzlu tuzlu", "mavi mavi"]
+},
+{
+  "c": "Ben hızlıca hazırlanıyorum",
+  "s": "Me preparo rápidamente",
+  "g": "Tipo: Gramatical (Adverbio de modo -ca vs adjetivo base)",
+  "v": "hazırlanmak: prepararse",
+  "h": "hızlıca",
+  "alt": ["hızlı", "hızlıda", "hızlıdan"]
+},
+{
+  "c": "Sen sessizce çalışıyorsun",
+  "s": "Trabajas en silencio",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "çalışmak: trabajar",
+  "h": "sessizce",
+  "alt": ["sessiz", "tuzluca", "pahalının"]
+},
+{
+  "c": "O yeni filmi merakla izliyor",
+  "s": "Ve la nueva película con curiosidad",
+  "g": "Tipo: Semántica (Lógica de actitud emocional)",
+  "v": "izlemek: ver/mirar",
+  "h": "merakla",
+  "alt": ["tuzla", "bulutla", "ekmekle"]
+},
+{
+  "c": "Biz hafta sonu birlikte geziyoruz",
+  "s": "Salimos juntos (paseamos) el fin de semana",
+  "g": "Tipo: Gramatical (Sufijo personal de 1ª persona plural -iyoruz vs otros sujetos)",
+  "v": "gezmek: pasear/viajar",
+  "h": "geziyoruz",
+  "alt": ["geziyorsun", "geziyorlar", "geziyorsunuz"]
+},
+{
+  "c": "Siz kahvaltıyı genelde evde yapıyorsunuz",
+  "s": "Normalmente desayunáis en casa",
+  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "v": "kahvaltı yapmak: desayunar",
+  "h": "kahvaltıyı",
+  "alt": ["kahvaltıya", "tuzluca", "pahalının"]
+},
+{
+  "c": "Onlar büyük parkta oturuyor",
+  "s": "Se sientan en el gran parque",
+  "g": "Tipo: Semántica (Lógica de ubicación física)",
+  "v": "oturmak: sentarse/vivir",
+  "h": "parkta",
+  "alt": ["çorbada", "uykuda", "fikirde"]
+},
+{
+  "c": "Ben dersleri dikkatlice takip ediyorum",
+  "s": "Sigo las clases con atención",
+  "g": "Sufijo de modo (-ce) para formar adverbios",
+  "v": "takip etmek: seguir",
+  "h": "dikkatlice",
+  "alt": ["dikkatli", "tuzluca", "pahalının"]
+},
+{
+  "c": "Sen soruyu kolayca çözüyorsun",
+  "s": "Resuelves la pregunta fácilmente",
+  "g": "Acusativo definido (-u) para el objeto directo",
+  "v": "çözmek: resolver",
+  "h": "soruyu",
+  "alt": ["soruya", "tuzluca", "mavi"]
+},
+{
+  "c": "O haberleri sessizce izliyor",
+  "s": "Ve las noticias en silencio",
+  "g": "Acusativo plural (-leri) para objetos específicos",
+  "v": "izlemek: ver/mirar",
+  "h": "haberleri",
+  "alt": ["haberlere", "tuzluca", "pembeyi"]
+},
+{
+  "c": "Biz sahilde uzun yürüyüş yapıyoruz",
+  "s": "Damos largos paseos por la playa",
+  "g": "Locativo (-de) para indicar ubicación física",
+  "v": "yürüyüş yapmak: pasear",
+  "h": "sahilde",
+  "alt": ["sahili", "tuzluca", "pahalının"]
+},
+{
+  "c": "Siz yeni şeyleri yavaş yavaş öğreniyorsunuz",
+  "s": "Aprendéis cosas nuevas poco a poco",
+  "g": "Acusativo plural (-leri) para objetos directos específicos",
+  "v": "öğrenmek: aprender",
+  "h": "şeyleri",
+  "alt": ["şeylere", "tuzluca", "mavi"]
+},
+{
+  "c": "Onlar şehirde hızlıca dolaşıyor",
+  "s": "Pasean rápido por la ciudad",
+  "g": "Sufijo de modo (-ca) para transformar adjetivos en adverbios",
+  "v": "dolaşmak: pasear/dar vueltas",
+  "h": "hızlıca",
+  "alt": ["hızlı", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben sabah kısa kahvaltı yapıyorum",
+  "s": "Hago un desayuno corto por la mañana",
+  "g": "Objeto directo indefinido sin sufijo de caso",
+  "v": "yapmak: hacer",
+  "h": "kahvaltı",
+  "alt": ["kahvaltıyı", "tuzluca", "mavi"]
+},
+{
+  "c": "Sen arkadaşlarınla sık konuşuyorsun",
+  "s": "Hablas a menudo con tus amigos",
+  "g": "Instrumental plural (-larla) para compañía",
+  "v": "konuşmak: hablar",
+  "h": "arkadaşlarınla",
+  "alt": ["arkadaşlarına", "tuzluca", "pahalının"]
+},
+{
+  "c": "O evde sessizce kitap okuyor",
+  "s": "Lee libros en casa en silencio",
+  "g": "Sufijo de modo (-ce) para indicar la actitud",
+  "v": "okumak: leer",
+  "h": "sessizce",
+  "alt": ["sessiz", "tuzluca", "pembe"]
+},
+{
+  "c": "Biz büyük masada yemek yiyoruz",
+  "s": "Comemos en una mesa grande",
+  "g": "Locativo (-da) sobre adjetivo atributivo",
+  "v": "yemek yemek: comer",
+  "h": "masada",
+  "alt": ["masayı", "tuzluca", "mavi"]
+},
+{
+  "c": "Siz sabah erken kalkıyorsunuz",
+  "s": "Os levantáis temprano por la mañana",
+  "g": "Adverbio temporal de base",
+  "v": "kalkmak: levantarse",
+  "h": "erken",
+  "alt": ["erkence", "tuzluca", "pahalının"]
+},
+{
+  "c": "Onlar akşam televizyon izliyor",
+  "s": "Ven la televisión por la noche",
+  "g": "Sustantivo temporal y objeto directo indefinido",
+  "v": "izlemek: ver/mirar",
+  "h": "televizyon",
+  "alt": ["televizyonu", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben hızlıca dışarı çıkıyorum",
+  "s": "Salgo rápidamente",
+  "g": "Adverbio de modo (-ca) y adverbio de dirección",
+  "v": "çıkmak: salir",
+  "h": "dışarı",
+  "alt": ["dışarıya", "tuzluca", "mavi"]
+},
+{
+  "c": "Sen dikkatlice not alıyorsun",
+  "s": "Tomas notas con cuidado",
+  "g": "Adverbio de modo (-ce) y objeto directo indefinido",
+  "v": "not almak: tomar notas",
+  "h": "not",
+  "alt": ["notu", "tuzluca", "pahalının"]
+},
+{
+  "c": "O uzun yolu yavaş yürüyor",
+  "s": "Camina lentamente por el camino largo",
+  "g": "Acusativo definido (-u) y adjetivo con función de adverbio",
+  "v": "yürümek: caminar",
+  "h": "yolu",
+  "alt": ["yola", "bulutça", "ekşi"]
+},
+{
+  "c": "Biz genelde evde dinleniyoruz",
+  "s": "Normalmente descansamos en casa",
+  "g": "Locativo (-de) y adverbio de frecuencia",
+  "v": "dinlenmek: descansar",
+  "h": "evde",
+  "alt": ["evden", "tuzluca", "pahalının"]
+},
+{
+  "c": "Siz kolayca öğreniyorsunuz",
+  "s": "Aprendéis fácilmente",
+  "g": "Sufijo de modo (-ca) sobre adjetivo",
+  "v": "öğrenmek: aprender",
+  "h": "kolayca",
+  "alt": ["kolay", "tuzluca", "mavi"]
+},
+{
+  "c": "Onlar yeni yerleri keşfediyor",
+  "s": "Descubren nuevos lugares",
+  "g": "Acusativo plural definido (-leri)",
+  "v": "keşfetmek: descubrir",
+  "h": "yerleri",
+  "alt": ["yerlere", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben sabah erken kalkmayı seviyorum",
+  "s": "Me gusta levantarme temprano por la mañana",
+  "g": "Gerundio de objeto (-mayı) requerido por 'sevmek'",
+  "v": "sevmek: gustar/amar",
+  "h": "kalkmayı",
+  "alt": ["kalkmaya", "tuzluca", "pembe"]
+},
+{
+  "c": "Sen kahveyi sıcak içiyorsun",
+  "s": "Bebes el café caliente",
+  "g": "Acusativo definido (-y-i) y adjetivo predicativo",
+  "v": "içmek: beber",
+  "h": "sıcak",
+  "alt": ["sıcakta", "tuzluca", "pahalının"]
+},
+{
+  "c": "O kitabı dikkatle bitiriyor",
+  "s": "Termina el libro con atención",
+  "g": "Acusativo definido (-ı) e instrumental de modo (-le)",
+  "v": "bitirmek: terminar",
+  "h": "dikkatle",
+  "alt": ["dikkatli", "bulutça", "mavi"]
+},
+{
+  "c": "Biz akşamları uzun sohbet ediyoruz",
+  "s": "Charlamos mucho por la noche",
+  "g": "Sufijo de tiempo plural (-ları) y verbo compuesto",
+  "v": "sohbet etmek: charlar",
+  "h": "sohbet",
+  "alt": ["sohbete", "tuzluca", "ekşi"]
+},
+{
+  "c": "Siz sakin müzik dinliyorsunuz",
+  "s": "Escucháis música tranquila",
+  "g": "Objeto directo indefinido (sin sufijo)",
+  "v": "dinlemek: escuchar",
+  "h": "sakin",
+  "alt": ["sakinde", "tuzluca", "pahalının"]
+},
+{
+  "c": "Onlar sabah spor yapıyor",
+  "s": "Hacen deporte por la mañana",
+  "g": "Sustantivo temporal y objeto directo indefinido",
+  "v": "spor yapmak: hacer deporte",
+  "h": "spor",
+  "alt": ["sporu", "bulutça", "mavi"]
+},
+{
+  "c": "Ben küçük molalarla çalışıyorum",
+  "s": "Trabajo con pequeñas pausas",
+  "g": "Plural (-lar) e instrumental (-la)",
+  "v": "çalışmak: trabajar",
+  "h": "molalarla",
+  "alt": ["molalara", "tuzluca", "ekşi"]
+},
+{
+  "c": "Sen yeni kelimeleri hızlı öğreniyorsun",
+  "s": "Aprendes palabras nuevas rápido",
+  "g": "Acusativo plural definido (-leri) y adjetivo con función adverbial",
+  "v": "öğrenmek: aprender",
+  "h": "kelimeleri",
+  "alt": ["kelimelerden", "bulutça", "pembe"]
+},
+{
+  "c": "O şehre yavaş alışıyor",
+  "s": "Se adapta lentamente a la ciudad",
+  "g": "Dativo de dirección (-e) requerido por 'alışmak'",
+  "v": "alışmak: acostumbrarse/adaptarse",
+  "h": "şehre",
+  "alt": ["şehirde", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz evde sıcak çay içiyoruz",
+  "s": "Bebemos té caliente en casa",
+  "g": "Locativo (-de) y objeto directo indefinido",
+  "v": "içmek: beber",
+  "h": "sıcak",
+  "alt": ["sıcakta", "bulutça", "mavi"]
+},
+{
+  "c": "Siz dikkatlice plan yapıyorsunuz",
+  "s": "Planificáis con cuidado",
+  "g": "Adverbio de modo (-ce) y verbo compuesto",
+  "v": "plan yapmak: planificar",
+  "h": "dikkatlice",
+  "alt": ["dikkatli", "tuzluca", "ekşi"]
+},
+{
+  "c": "Onlar salonda toplanıyor",
+  "s": "Se reúnen en el salón",
+  "g": "Locativo (-da) y verbo reflexivo/pasivo",
+  "v": "toplanmak: reunirse",
+  "h": "salonda",
+  "alt": ["salonu", "bulutça", "pahalının"]
+},
+{
+  "c": "Ben akşam sessizce düşünüyorum",
+  "s": "Pienso en silencio por la noche",
+  "g": "Sustantivo temporal y adverbio de modo",
+  "v": "düşünmek: pensar",
+  "h": "sessizce",
+  "alt": ["sessiz", "tuzluca", "mavi"]
+},
+{
+  "c": "Sen biraz geç kalkıyorsun",
+  "s": "Te levantas un poco tarde",
+  "g": "Adverbio de cantidad (biraz) y adverbio temporal",
+  "v": "kalkmak: levantarse",
+  "h": "geç",
+  "alt": ["geçte", "bulutça", "pembe"]
+},
+{
+  "c": "O videoları dikkatle izliyor",
+  "s": "Ve vídeos con atención",
+  "g": "Acusativo plural definido (-ları) e instrumental (-le)",
+  "v": "izlemek: ver/mirar",
+  "h": "dikkatle",
+  "alt": ["dikkatli", "tuzluca", "ekşi"]
+},
+{
+  "c": "Biz rahat bir ortamda çalışıyoruz",
+  "s": "Trabajamos en un ambiente cómodo",
+  "g": "Locativo (-da) con artículo indefinido (bir)",
+  "v": "çalışmak: trabajar",
+  "h": "ortamda",
+  "alt": ["ortamı", "bulutça", "pahalının"]
+},
+{
+  "c": "Siz eski arkadaşları görüyorsunuz",
+  "s": "Veis a viejos amigos",
+  "g": "Acusativo plural definido (-ları)",
+  "v": "görmek: ver",
+  "h": "arkadaşları",
+  "alt": ["arkadaşlara", "tuzluca", "mavi"]
+},
+{
+  "c": "Onlar hızlı yemek hazırlıyor",
+  "s": "Preparan la comida rápido",
+  "g": "Adjetivo con función adverbial y objeto indefinido",
+  "v": "hazırlamak: preparar",
+  "h": "hızlı",
+  "alt": ["hızlıda", "tuzluca", "mavi"]
+},
+{
+  "c": "Ben her gün çalışkan bir şekilde çalışıyorum",
+  "s": "Trabajo de forma constante cada día",
+  "g": "Locativo en locución adverbial (-şekilde)",
+  "v": "çalışmak: trabajar",
+  "h": "şekilde",
+  "alt": ["şekilden", "bulutça", "pahalının"]
+},
+{
+  "c": "Sen çok iyi bir öğrencisin",
+  "s": "Eres un muy buen estudiante",
+  "g": "Sufijo personal de 2ª persona (-sin)",
+  "v": "öğrenci olmak: ser estudiante",
+  "h": "öğrencisin",
+  "alt": ["öğrenciyi", "tuzluca", "ekşi"]
+},
+{
+  "c": "O çok sabırlı bir insandır",
+  "s": "Es una persona muy paciente",
+  "g": "Sufijo de aserción/generalización (-dır)",
+  "v": "insan olmak: ser persona",
+  "h": "insandır",
+  "alt": ["insanda", "bulutça", "mavi"]
+},
+{
+  "c": "Biz çok iyi bir takımız",
+  "s": "Somos un muy buen equipo",
+  "g": "Sufijo personal de 1ª persona plural (-ız)",
+  "v": "takım olmak: ser un equipo",
+  "h": "takımız",
+  "alt": ["takımı", "tuzluca", "pahalının"]
+},
+{
+  "c": "Siz çok nazik insanlarsınız",
+  "s": "Sois personas muy amables",
+  "g": "Sufijo personal de 2ª persona plural (-larsınız)",
+  "v": "nazik olmak: ser amable",
+  "h": "insanlarsınız",
+  "alt": ["insanları", "bulutça", "pembe"]
+},
+{
+  "c": "Onlar çok mutlu insanlar",
+  "s": "Son personas muy felices",
+  "g": "Predicado nominal plural (-(lar))",
+  "v": "mutlu olmak: ser feliz",
+  "h": "insanlar",
+  "alt": ["insanlara", "tuzluca", "ekşi"]
+},
+{
+  "c": "Ben hoy çok dikkatliyim",
+  "s": "Hoy estoy muy atento",
+  "g": "Sufijo derivativo (-li) y sufijo personal (-(y)im)",
+  "v": "dikkatli olmak: estar atento",
+  "h": "dikkatliyim",
+  "alt": ["dikkatliyle", "bulutça", "mavi"]
+},
+{
+  "c": "Sen gerçekten iyi bir arkadaşsın",
+  "s": "Eres realmente un buen amigo",
+  "g": "Sufijo personal de 2ª persona singular (-sın)",
+  "v": "arkadaş comprar: ser amigo",
+  "h": "arkadaşsın",
+  "alt": ["arkadaştan", "tuzluca", "pahalının"]
+},
+{
+  "c": "O çok çalışkan bir doktordur",
+  "s": "Es un médico muy trabajador",
+  "g": "Sufijo de aserción o estado general (-dur)",
+  "v": "doktor olmak: ser médico",
+  "h": "doktordur",
+  "alt": ["doktora", "bulutça", "ekşi"]
+},
+{
+  "c": "Biz çok güçlü bir grubuz",
+  "s": "Somos un grupo muy fuerte",
+  "g": "Sufijo personal de 1ª persona plural (-uz)",
+  "v": "grup olmak: ser un grupo",
+  "h": "grubuz",
+  "alt": ["grubun", "tuzluca", "pembe"]
+},
+{
+  "c": "Siz çok akıllı insanlarsınız",
+  "s": "Sois personas muy inteligentes",
+  "g": "Sufijo personal de 2ª persona plural (-larsınız)",
+  "v": "akıllı olmak: ser inteligente",
+  "h": "insanlarsınız",
+  "alt": ["insanlarda", "bulutça", "mavi"]
+},
+{
+  "c": "Onlar çok deneyimli öğretmenler",
+  "s": "Son profesores muy experimentados",
+  "g": "Plural en el predicado nominal (-ler)",
+  "v": "öğretmen olmak: ser profesor",
+  "h": "öğretmenler",
+  "alt": ["öğretmenleri", "tuzluca", "mavi"]
+},
+{
+  "c": "O her zaman doğruyu söyler",
+  "s": "Él/ella siempre dice la verdad",
+  "g": "Acusativo definido (-y-u) y Geniş Zaman en 3ª persona",
+  "v": "söylemek: decir",
+  "h": "doğruyu",
+  "alt": ["doğruya", "bulutça", "pahalının"]
+},
+{
+  "c": "Ben genelde evde yemek yerim",
+  "s": "Normalmente como en casa",
+  "g": "Locativo (-de) y Geniş Zaman con cambio de raíz (ye- > ye-r-im)",
+  "v": "yemek yemek: comer",
+  "h": "yerim",
+  "alt": ["yemem", "tuzluca", "ekşi"]
+},
+{
+  "c": "Sen genelde otobüsle işe gidersin",
+  "s": "Normalmente vas al trabajo en autobús",
+  "g": "Instrumental (-le), dativo (-e) y mutación consonántica (t > d)",
+  "v": "gitmek: ir",
+  "h": "gidersin",
+  "alt": ["gideceksin", "bulutça", "pembe"]
+},
+{
+  "c": "Biz çoğu zaman birlikte çalışırız",
+  "s": "La mayoría de las veces trabajamos juntos",
+  "g": "Adverbio de frecuencia y Geniş Zaman plural (-ız)",
+  "v": "çalışmak: trabajar",
+  "h": "çalışırız",
+  "alt": ["çalışıyoruz", "tuzluca", "mavi"]
+},
+{
+  "c": "O çoğu zaman kitap okur",
+  "s": "La mayoría de las veces lee libros",
+  "g": "Objeto directo indefinido y Geniş Zaman",
+  "v": "okumak: leer",
+  "h": "okur",
+  "alt": ["okuyor", "bulutça", "pahalının"]
+},
+{
+  "c": "Ben sık sık arkadaşlarımla konuşurum",
+  "s": "Hablo a menudo con mis amigos",
+  "g": "Reduplicación de adverbio y comitativo plural (-lar-ım-la)",
+  "v": "konuşmak: hablar",
+  "h": "konuşurum",
+  "alt": ["konuşuyorum", "tuzluca", "ekşi"]
+},
+{
+  "c": "Sen sık sık sinemaya gidersin",
+  "s": "Vas al cine a menudo",
+  "g": "Dativo de dirección (-y-a) y Geniş Zaman",
+  "v": "gitmek: ir",
+  "h": "gidersin",
+  "alt": ["gitmelisin", "bulutça", "mavi"]
+},
+{
+  "c": "Ben bazen kahve içerim",
+  "s": "A veces bebo café",
+  "g": "Objeto indefinido y Geniş Zaman",
+  "v": "içmek: beber",
+  "h": "içerim",
+  "alt": ["içiyorum", "tuzluca", "pembe"]
+},
+{
+  "c": "O bazen geç gelir",
+  "s": "A veces llega tarde",
+  "g": "Adverbio temporal y Geniş Zaman irregular (gel-ir)",
+  "v": "gelmek: venir/llegar",
+  "h": "gelir",
+  "alt": ["geliyor", "bulutça", "pahalının"]
+},
+{
+  "c": "Biz ara sıra parka gideriz",
+  "s": "De vez en cuando vamos al parque",
+  "g": "Locución adverbial y dativo (-a)",
+  "v": "gitmek: ir",
+  "h": "gideriz",
+  "alt": ["gidiyoruz", "tuzluca", "ekşi"]
+},
+{
+  "c": "Sen ara sıra film izlersin",
+  "s": "De vez en cuando ves películas",
+  "g": "Geniş Zaman en raíz terminada en vocal (-(a)r)",
+  "v": "izlemek: ver/mirar",
+  "h": "izlersin",
+  "alt": ["izliyorsun", "bulutça", "mavi"]
+},
+{
+  "c": "Ben nadiren dışarı çıkarım",
+  "s": "Raramente salgo fuera",
+  "g": "Adverbio de frecuencia y dirección",
+  "v": "çıkmak: salir",
+  "h": "çıkarım",
+  "alt": ["çıkıyorum", "tuzluca", "pahalının"]
+},
+{
+  "c": "O nadiren hata yapar",
+  "s": "Raramente comete errores",
+  "g": "Objeto indefinido y verbo compuesto",
+  "v": "hata yapmak: cometer errores",
+  "h": "yapar",
+  "alt": ["yapıyor", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben asla sigara içmem",
+  "s": "Nunca fumo",
+  "g": "Negación del Geniş Zaman (-me/-ma)",
+  "v": "sigara içmek: fumar",
+  "h": "içmem",
+  "alt": ["içerim", "tuzluca", "pembe"]
+},
+{
+  "c": "O hiç geç kalmaz",
+  "s": "Nunca llega tarde",
+  "g": "Negación del Geniş Zaman en 3ª persona (-maz)",
+  "v": "geç kalmak: llegar tarde",
+  "h": "kalmaz",
+  "alt": ["kalır", "bulutça", "mavi"]
+},
+{
+  "c": "Ben her gün Türkçe çalışırım",
+  "s": "Estudio turco cada día",
+  "g": "Geniş Zaman con raíz polisílaba (-ır)",
+  "v": "çalışmak: estudiar/trabajar",
+  "h": "çalışırım",
+  "alt": ["çalışıyorum", "tuzluca", "pahalının"]
+},
+{
+  "c": "Sen her gün spor yaparsın",
+  "s": "Haces deporte cada día",
+  "g": "Sustantivo + Geniş Zaman en 2ª persona singular",
+  "v": "spor yapmak: hacer deporte",
+  "h": "yaparsın",
+  "alt": ["yaparsınız", "tuzluca", "mavi"]
+},
+{
+  "c": "Biz her hafta sinemaya gideriz",
+  "s": "Vamos al cine cada semana",
+  "g": "Dativo de dirección (-y-a) y mutación consonántica (t > d)",
+  "v": "gitmek: ir",
+  "h": "gideriz",
+  "alt": ["gidiyoruz", "bulutça", "pahalının"]
+},
+{
+  "c": "O her hafta ailesini ziyaret eder",
+  "s": "Visita a su familia cada semana",
+  "g": "Posesivo + n de unión + Acusativo (-si-n-i) y verbo compuesto",
+  "v": "ziyaret etmek: visitar",
+  "h": "eder",
+  "alt": ["edersin", "tuzluca", "ekşi"]
+},
+{
+  "c": "Ben her ay kitap alırım",
+  "s": "Compro libros cada mes",
+  "g": "Objeto indefinido y Geniş Zaman (al-ır es excepción de una sílaba)",
+  "v": "almak: comprar/tomar",
+  "h": "alırım",
+  "alt": ["alıyorum", "bulutça", "mavi"]
+},
+{
+  "c": "Sen her ay doktora gidersin",
+  "s": "Vas al médico cada mes",
+  "g": "Dativo (-a) y Geniş Zaman",
+  "v": "gitmek: ir",
+  "h": "gidersin",
+  "alt": ["gidersiniz", "tuzluca", "pahalının"]
+},
+{
+  "c": "Biz her yıl tatile gideriz",
+  "s": "Vamos de vacaciones cada año",
+  "g": "Dativo de dirección sobre sustantivo",
+  "v": "gitmek: ir",
+  "h": "tatile",
+  "alt": ["tatilden", "bulutça", "ekşi"]
+},
+{
+  "c": "O her yıl doğum gününü kutlar",
+  "s": "Celebra su cumpleaños cada año",
+  "g": "Compuesto nominal con posesivo y acusativo (-ü-n-ü)",
+  "v": "kutlamak: celebrar",
+  "h": "gününü",
+  "alt": ["gününe", "tuzluca", "pembe"]
+},
+{
+  "c": "Ben çok sık arkadaşlarımı görürüm",
+  "s": "Veo a mis amigos muy a menudo",
+  "g": "Plural + Posesivo + Acusativo (-lar-ım-ı) y Geniş Zaman irregular (gör-ür)",
+  "v": "görmek: ver",
+  "h": "görürüm",
+  "alt": ["görüyorum", "bulutça", "mavi"]
+},
+{
+  "c": "Sen çok sık mesaj yazarsın",
+  "s": "Escribes mensajes muy a menudo",
+  "g": "Objeto directo indefinido y Geniş Zaman",
+  "v": "yazmak: escribir",
+  "h": "yazarsın",
+  "alt": ["yazardın", "tuzluca", "pahalının"]
+},
+{
+  "c": "Ben daha sık spor yapmak istiyorum",
+  "s": "Quiero hacer deporte más a menudo",
+  "g": "Comparativo (daha) e infinitivo de objeto (-mak)",
+  "v": "istemek: querer",
+  "h": "istiyorum",
+  "alt": ["isteyeceğim", "tuzluca", "mavi"]
+},
+{
+  "c": "O daha sık kitap okur",
+  "s": "Lee libros más a menudo",
+  "g": "Comparativo y Geniş Zaman en 3ª persona",
+  "v": "okumak: leer",
+  "h": "okur",
+  "alt": ["okuyor", "bulutça", "pahalının"]
+},
+{
+  "c": "Ben pek sık dışarı çıkmam",
+  "s": "No salgo muy a menudo",
+  "g": "Adverbio de grado (pek) y negación de 1ª persona (-mam)",
+  "v": "çıkmak: salir",
+  "h": "çıkmam",
+  "alt": ["çıkıyorum", "tuzluca", "ekşi"]
+},
+{
+  "c": "O pek sık sinemaya gitmez",
+  "s": "No va al cine muy a menudo",
+  "g": "Negación de 3ª persona (-mez)",
+  "v": "gitmek: ir",
+  "h": "gitmez",
+  "alt": ["gitmiyor", "bulutça", "mavi"]
+},
+{
+  "c": "Zaman zaman hava değişir",
+  "s": "De vez en cuando cambia el tiempo",
+  "g": "Locución adverbial y Geniş Zaman (değiş-ir)",
+  "v": "değişmek: cambiar",
+  "h": "hava",
+  "alt": ["havayı", "tuzluca", "pembe"]
+},
+{
+  "c": "Biz zaman zaman buluşuruz",
+  "s": "De vez en cuando nos reunimos",
+  "g": "Verbo recíproco (-uş) y Geniş Zaman plural",
+  "v": "buluşmak: reunirse/quedar",
+  "h": "buluşuruz",
+  "alt": ["buluşacağız", "bulutça", "pahalının"]
+},
+{
+  "c": "O çoğunlukla evde kalır",
+  "s": "Mayormente se queda en casa",
+  "g": "Adverbio de frecuencia y Geniş Zaman (kal-ır es excepción de una sílaba)",
+  "v": "kalmak: quedarse/permanecer",
+  "h": "çoğunlukla",
+  "alt": ["çoğunluktan", "tuzluca", "ekşi"]
+},
+{
+  "c": "Ben çoğunlukla kitap okurum",
+  "s": "Mayormente leo libros",
+  "g": "Objeto indefinido y Geniş Zaman en 1ª persona",
+  "v": "okumak: leer",
+  "h": "okurum",
+  "alt": ["okuyorum", "bulutça", "mavi"]
+},
+{
+  "c": "Seyrek olarak hata yaparım",
+  "s": "Raramente (de forma espaciada) cometo errores",
+  "g": "Locución adverbial con 'olarak' (como/de forma) y Geniş Zaman",
+  "v": "hata yapmak: cometer errores",
+  "h": "seyrek",
+  "alt": ["seyreğe", "tuzluca", "pahalının"]
+},
+{
+  "c": "O seyrek olarak dışarı çıkar",
+  "s": "Raramente sale fuera",
+  "g": "Adverbio de dirección y Geniş Zaman",
+  "v": "çıkmak: salir",
+  "h": "çıkar",
+  "alt": ["çıkıyor", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben nadir olarak sinemaya giderim",
+  "s": "Raramente voy al cine",
+  "g": "Dativo de dirección (-y-a) y mutación consonántica (t > d)",
+  "v": "gitmek: ir",
+  "h": "nadir",
+  "alt": ["nadire", "tuzluca", "pembe"]
+},
+{
+  "c": "O nadir olarak konuşur",
+  "s": "Raramente habla",
+  "g": "Geniş Zaman en raíz de dos sílabas (-ur)",
+  "v": "konuşmak: hablar",
+  "h": "konuşur",
+  "alt": ["konuşuyor", "bulutça", "mavi"]
+},
+{
+  "c": "Ben sürekli çalışıyorum",
+  "s": "Trabajo continuamente",
+  "g": "Adverbio de continuidad y Presente Continuo (-yor)",
+  "v": "çalışmak: trabajar",
+  "h": "sürekli",
+  "alt": ["sürekliye", "tuzluca", "pahalının"]
+},
+{
+  "c": "O sürekli telefonla konuşuyor",
+  "s": "Habla continuamente por teléfono",
+  "g": "Instrumental (-la) y Presente Continuo",
+  "v": "konuşmak: hablar",
+  "h": "telefonla",
+  "alt": ["telefonu", "tuzluca", "mavi"]
+},
+{
+  "c": "Kapı durmadan çalıyor",
+  "s": "La puerta no para de sonar (suena sin detenerse)",
+  "g": "Gerundio negativo (-madan: sin parar/detenerse)",
+  "v": "çalmak: sonar/tocar/robar",
+  "h": "durmadan",
+  "alt": ["durmaya", "bulutça", "pahalının"]
+},
+{
+  "c": "O durmadan konuşuyor",
+  "s": "Habla sin parar",
+  "g": "Gerundio de modo que indica acción ininterrumpida",
+  "v": "konuşmak: hablar",
+  "h": "durmadan",
+  "alt": ["durmaz", "tuzluca", "ekşi"]
+},
+{
+  "c": "Ben hep evdeyim",
+  "s": "Siempre estoy en casa",
+  "g": "Adverbio de totalidad (hep), locativo (-de) y sufijo personal (-(y)im)",
+  "v": "evde olmak: estar en casa",
+  "h": "evdeyim",
+  "alt": ["evdeyiz", "bulutça", "mavi"]
+},
+{
+  "c": "Ben evde sessizce dinleniyorum",
+  "s": "Descanso en casa en silencio",
+  "g": "Locativo (-de) y adverbio de modo (-ce)",
+  "v": "dinlenmek: descansar",
+  "h": "sessizce",
+  "alt": ["sessiz", "tuzluca", "pahalının"]
+},
+{
+  "c": "Sen dışarıda hızlıca yürüyorsun",
+  "s": "Caminas rápido fuera",
+  "g": "Locativo (-da) y adverbio de modo (-ca)",
+  "v": "yürümek: caminar",
+  "h": "hızlıca",
+  "alt": ["hızlı", "bulutça", "ekşi"]
+},
+{
+  "c": "O yeni kitabı merakla okuyor",
+  "s": "Lee el nuevo libro con curiosidad",
+  "g": "Acusativo definido (-ı) e instrumental (-la)",
+  "v": "okumak: leer",
+  "h": "merakla",
+  "alt": ["meraklı", "tuzluca", "pembe"]
+},
+{
+  "c": "Biz birlikte yemek yapıyoruz",
+  "s": "Cocinamos juntos (hacemos comida)",
+  "g": "Adverbio de compañía y objeto indefinido",
+  "v": "yemek yapmak: cocinar",
+  "h": "birlikte",
+  "alt": ["birlikten", "bulutça", "mavi"]
+},
+{
+  "c": "Siz film izlerken konuşuyorsunuz",
+  "s": "Habláis mientras veis la película",
+  "g": "Sufijo temporal (-ken: mientras)",
+  "v": "konuşmak: hablar",
+  "h": "izlerken",
+  "alt": ["izledik", "tuzluca", "pahalının"]
+},
+{
+  "c": "Onlar parkta uzun süre kalıyor",
+  "s": "Permanecen mucho tiempo en el parque",
+  "g": "Locativo (-ta) y locución de duración",
+  "v": "kalmak: permanecer/quedarse",
+  "h": "kalıyor",
+  "alt": ["kalmak", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben sabah kahvaltıyı hızlı yapıyorum",
+  "s": "Desayuno rápido por la mañana",
+  "g": "Acusativo definido (-y-ı) y adjetivo con función adverbial",
+  "v": "kahvaltı yapmak: desayunar",
+  "h": "hızlı",
+  "alt": ["hızlıda", "tuzluca", "mavi"]
+},
+{
+  "c": "Sen dikkatlice dinliyorsun",
+  "s": "Escuchas con atención",
+  "g": "Adverbio de modo (-ce) y armonía vocálica",
+  "v": "dinlemek: escuchar",
+  "h": "dikkatlice",
+  "alt": ["dikkatli", "bulutça", "pembe"]
+},
+{
+  "c": "O evde yalnız oturuyor",
+  "s": "Está sentado solo en casa",
+  "g": "Locativo (-de) y predicado de estado",
+  "v": "oturmak: estar sentado/vivir",
+  "h": "yalnız",
+  "alt": ["yalnızca", "tuzluca", "mavi"]
+},
+{
+  "c": "Biz hafta sonu dinleniyoruz",
+  "s": "Descansamos el fin de semana",
+  "g": "Compuesto nominal (son-u) actuando como adverbio temporal",
+  "v": "dinlenmek: descansar",
+  "h": "hafta sonu",
+  "alt": ["hafta sonuna", "bulutça", "pahalının"]
+},
+{
+  "c": "Siz yeni şeyler keşfediyorsunuz",
+  "s": "Descubrís cosas nuevas",
+  "g": "Objeto directo indefinido plural",
+  "v": "keşfetmek: descubrir",
+  "h": "şeyler",
+  "alt": ["şeyleri", "tuzluca", "ekşi"]
+},
+{
+  "c": "Onlar yavaş yavaş konuşuyor",
+  "s": "Hablan lentamente",
+  "g": "Reduplicación para enfatizar el modo",
+  "v": "konuşmak: hablar",
+  "h": "yavaş yavaş",
+  "alt": ["yavaştan", "bulutça", "mavi"]
+},
+{
+  "c": "Ben çok iyi bir öğrenciyim ve düzenli çalışıyorum",
+  "s": "Soy un muy buen estudiante y estudio regularmente",
+  "g": "Sufijo personal (-(y)im) y conjunción (ve)",
+  "v": "çalışmak: estudiar/trabajar",
+  "h": "düzenli",
+  "alt": ["düzenliye", "tuzluca", "pahalının"]
+},
+{
+  "c": "Sen çok sabırlı bir insansın y iyi dinliyorsun",
+  "s": "Eres muy paciente y escuchas bien",
+  "g": "Sufijo personal (-sın) y adverbio de modo",
+  "v": "dinlemek: escuchar",
+  "h": "sabırlı",
+  "alt": ["sabırlıyı", "bulutça", "ekşi"]
+},
+{
+  "c": "O çok iyi bir arkadaş ve her zaman yardım ediyor",
+  "s": "Es un muy buen amigo y siempre ayuda",
+  "g": "Adverbio de frecuencia (her zaman) y verbo compuesto",
+  "v": "yardım etmek: ayudar",
+  "h": "her zaman",
+  "alt": ["her zamana", "tuzluca", "mavi"]
+},
+{
+  "c": "Biz mutlu bir aileyiz ve birlikte vakit geçiriyoruz",
+  "s": "Somos una familia feliz y pasamos tiempo juntos",
+  "g": "Sufijo personal plural (-(y)iz) y objeto directo indefinido",
+  "v": "vakit geçirmek: pasar el tiempo",
+  "h": "vakit",
+  "alt": ["vakiti", "bulutça", "pahalının"]
+},
+{
+  "c": "Siz çok dikkatli insanlarsınız ve hata yapmıyorsunuz",
+  "s": "Sois muy cuidadosos y no cometéis errores",
+  "g": "Sufijo personal plural (-larsınız) y presente negativo (-mı)",
+  "v": "hata yapmak: cometer errores",
+  "h": "yapmıyorsunuz",
+  "alt": ["yapmazsınız", "tuzluca", "ekşi"]
+},
+{
+  "c": "Onlar çok iyi arkadaşlar ve sık görüşüyor",
+  "s": "Son muy buenos amigos y se ven a menudo",
+  "g": "Sufijo plural (-lar) y verbo recíproco (-üş)",
+  "v": "görüşmek: verse/reunirse",
+  "h": "sık",
+  "alt": ["sıkta", "bulutça", "mavi"]
+},
+{
+  "c": "Ben sabahları kahveyi hızlı içiyorum ve işe gidiyorum",
+  "s": "Bebo café rápido por la mañana y voy al trabajo",
+  "g": "Acusativo definido (-i) y dativo de dirección (-e)",
+  "v": "gitmek: ir",
+  "h": "işe",
+  "alt": ["işte", "tuzluca", "pahalının"]
+},
+{
+  "c": "Sen akşamları sessizce kitap okuyorsun",
+  "s": "Lees libros en silencio por la noche",
+  "g": "Sufijo de tiempo plural (-ları) y adverbio de modo (-ce)",
+  "v": "okumak: leer",
+  "h": "sessizce",
+  "alt": ["sessiz", "bulutça", "ekşi"]
+},
+{
+  "c": "Ben her sabah sıcak kahveyi hızlıca içiyorum",
+  "s": "Cada mañana bebo el café caliente rápidamente",
+  "g": "Acusativo definido (-y/i) y adverbio de modo (-ca)",
+  "v": "içmek: beber",
+  "h": "kahveyi",
+  "alt": ["kahveye", "tuzluca", "pembe"]
+},
+  {
+  "c": "Sen bugün okula biraz geç gidiyorsun",
+  "s": "Hoy vas un poco tarde a la escuela",
+  "g": "Dativo de dirección (-a/e)",
+  "v": "gitmek: ir",
+  "h": "okula",
+  "alt": ["okulda", "tuzluca", "mavi"]
+},
+{
+  "c": "O kalın kitabı dikkatlice okuyor",
+  "s": "Lee el libro grueso con atención",
+  "g": "Acusativo definido (-ı/i) y adverbio de modo (-ce/ca)",
+  "v": "okumak: leer",
+  "h": "kitabı",
+  "alt": ["kitaba", "bulutça", "pahalının"]
+},
+  {
+  "c": "Biz akşam lezzetli yemeği birlikte yiyoruz",
+  "s": "Cenamos comida deliciosa juntos",
+  "g": "Acusativo definido (-ı/i/u/ü) con mutación consonántica (k > ğ)",
+  "v": "yemek: comer/cenar",
+  "h": "yemeği",
+  "alt": ["yemeğe", "tuzluca", "ekşi"]
+}
+];
+
+
+function speak(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "tr-TR";
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+}
+
+function loadNewGame() {
+    currentIdx = Math.floor(Math.random() * sentences.length);
+    gameMode = Math.random() > 0.5 ? "order" : "fill";
+    renderGame();
+}
+
+function renderGame() {
+    locked = false;
+    userWords = [];
+    const item = sentences[currentIdx];
+    
+    document.getElementById('words-container').innerHTML = "";
+    document.getElementById('answer-zone').innerHTML = "";
+    document.getElementById('options-container').innerHTML = "";
+    document.getElementById('info-box').style.display = "none";
+    
+    if (gameMode === "order") {
+        document.getElementById('game-title').innerText = "Cümleyi düzenle";
+        document.getElementById('undo-btn').style.display = "inline-block";
+        document.getElementById('check-btn').style.display = "inline-block";
+
+        let shuffled = [...item.c.split(" ")].sort(() => Math.random() - 0.5);
+        shuffled.forEach(w => {
+            let span = document.createElement('div');
+            span.className = 'word';
+            span.innerText = w;
+            span.onclick = () => {
+                if(!locked) {
+                    userWords.push(w);
+                    span.style.display = "none";
+                    document.getElementById('answer-zone').innerText = userWords.join(" ");
+                }
+            };
+            document.getElementById('words-container').appendChild(span);
+        });
+    } else {
+        document.getElementById('game-title').innerText = "Boşluğu doldur";
+        document.getElementById('undo-btn').style.display = "none";
+        document.getElementById('check-btn').style.display = "none";
+        
+        document.getElementById('answer-zone').innerText = item.c.replace(item.h, "_______");
+
+        let options = [...item.alt, item.h].sort(() => Math.random() - 0.5);
+        options.forEach(opt => {
+            let btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => selectOption(opt, btn);
+            document.getElementById('options-container').appendChild(btn);
+        });
+    }
+}
+
+function selectOption(selected, btnElement) {
+    if (locked) return;
+    locked = true;
+    const item = sentences[currentIdx];
+    document.getElementById('answer-zone').innerText = item.c;
+    document.querySelectorAll('.option-btn').forEach(b => {
+        if (b.innerText === item.h) b.classList.add('correct');
+        else if (b === btnElement && selected !== item.h) b.classList.add('wrong');
+    });
+    showResult(selected === item.h);
+}
+
+function check() {
+    if (userWords.length === 0 || locked) return;
+    locked = true;
+    const item = sentences[currentIdx];
+    showResult(userWords.join(" ").toLowerCase() === item.c.toLowerCase());
+}
+
+function showResult(isCorrect) {
+    const item = sentences[currentIdx];
+    const msg = document.getElementById('result-msg');
+    msg.innerText = isCorrect ? "✔ Doğru!" : "✘ Yanlış!";
+    msg.style.color = isCorrect ? "#14b8a6" : "#f43f5e";
+    document.getElementById('correct-text').innerText = item.c;
+    document.getElementById('trans-text').innerText = item.s;
+    document.getElementById('verb-text').innerText = "📖 " + item.v;
+    document.getElementById('grammar-text').innerText = "💡 " + item.g;
+    document.getElementById('info-box').style.display = "block";
+    speak(item.c);
+}
+
+function resetCurrent() { renderGame(); }
+
+loadNewGame();
+</script>
+
+</body>
+</html>
