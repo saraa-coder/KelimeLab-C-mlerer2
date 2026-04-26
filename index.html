@@ -173,7 +173,7 @@ const sentences = [
 {
 "c": "Siz genelde eski müzikleri keyifle dinliyorsunuz",
 "s": "Normalmente escucháis música antigua con placer",
-"g": "El verbo 'dinlemek' rige Acusativo definido (-i)",
+"g": "‘dinlemek’ rige Acusativo definido (-i); el plural (-ler) indica objeto específico",
 "v": "dinlemek: escuchar",
 "h": "müzikleri",
 "alt": ["müziklere", "müziklerde", "müziklerden"]
@@ -181,7 +181,7 @@ const sentences = [
 {
 "c": "Onlar büyük parkta yavaş yavaş yürüyor",
 "s": "Caminan lentamente por el parque grande",
-"g": "Uso del caso Locativo (-ta) para indicar lugar",
+"g": "El verbo 'yürümek' rige Locativo (-da/-de) y reduplicación de adjetivos para formar adverbios",
 "v": "yürümek: caminar",
 "h": "parkta",
 "alt": ["parkı", "parka", "parktan"]
@@ -189,7 +189,7 @@ const sentences = [
 {
 "c": "Ben sabahları sessizce hazırlanıyorum",
 "s": "Por las mañanas me preparo en silencio",
-"g": "Formación de adverbios de modo con el sufijo -ce/-ca",
+"g": "Sufijo de tiempo plural (-ları) y adverbio de modo (-ce)",
 "v": "hazırlanmak: prepararse",
 "h": "sessizce",
 "alt": ["sessiz", "sessizle", "sessizde"]
@@ -197,7 +197,7 @@ const sentences = [
 {
   "c": "Sen hızlıca evden çıkıyorsun",
   "s": "Sales de casa rápidamente",
-  "g": "El verbo 'çıkmak' (salir) rige el caso Ablativo (-den/-dan)",
+  "g": "Ablativo de origen (-den/dan) y adverbio de modo (-ca)",
   "v": "çıkmak: salir",
   "h": "evden",
   "alt": ["evde", "eve", "evi"]
@@ -205,7 +205,7 @@ const sentences = [
 {
   "c": "O yeni filmi merakla izliyor",
   "s": "Ve la nueva película con curiosidad",
-  "g": "Uso del Acusativo definido (-i) requerido por el adjetivo 'yeni' y el verbo 'izlemek'",
+  "g": "Acusativo definido (-i) requerido por el adjetivo 'yeni' y el verbo 'izlemek'",
   "v": "izlemek: ver/mirar",
   "h": "filmi",
   "alt": ["film", "filme", "filmden"]
@@ -285,7 +285,7 @@ const sentences = [
 {
   "c": "Ben sabahları kısa bir kahvaltı yapıyorum",
   "s": "Hago un desayuno corto por las mañanas",
-  "g": "Objeto directo indefinido (sin sufijo) tras el adjetivo 'kısa'",
+  "g": "El uso de 'bir' + adjetivo marca un objeto indefinido, por lo que no lleva sufijo de Acusativo",
   "v": "yapmak: hacer",
   "h": "kahvaltı",
   "alt": ["kahvaltıyı", "kahvaltının", "kahvaltılar"]
@@ -293,7 +293,7 @@ const sentences = [
 {
   "c": "Sen arkadaşlarınla sık sık konuşuyorsun",
   "s": "Hablas a menudo con tus amigos",
-  "g": "Sufijo instrumental/comitativo (-la) sobre base posesiva plural",
+  "g": "Uso del sufijo Instrumental/Comitativo (-la) sobre el posesivo 'tus amigos' para indicar con quién se habla",
   "v": "konuşmak: hablar",
   "h": "arkadaşlarınla",
   "alt": ["arkadaşlarına", "arkadaşlarında", "arkadaşlarını"]
@@ -317,7 +317,7 @@ const sentences = [
 {
   "c": "Siz sabahları erken kalkıyorsunuz",
   "s": "Os levantáis temprano por la mañana",
-  "g": "Uso de adverbios temporales opuestos y sufijo -ları para rutina",
+  "g": "Uso de un adverbio de tiempo",
   "v": "kalkmak: levantarse",
   "h": "erken",
   "alt": ["erkene", "yavaşça", "sıcak"]
@@ -325,7 +325,7 @@ const sentences = [
 {
   "c": "Onlar akşamları televizyon izliyor",
   "s": "Ven la televisión por la noche",
-  "g": "Objeto directo base. El verbo 'izlemek' requiere un objeto visual",
+  "g": "Caso nominativo con concordancia semántica según el verbo",
   "v": "izlemek: ver/mirar",
   "h": "televizyon",
   "alt": ["televizyonu", "elma", "radyo"]
@@ -341,7 +341,7 @@ const sentences = [
 {
   "c": "Sen dikkatlice not alıyorsun",
   "s": "Tomas notas con cuidado",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Adverbio de modo mediante sufijo -ce/-ca",
   "v": "not almak: tomar notas",
   "h": "dikkatlice",
   "alt": ["dikkatli", "tuzluca", "mavi"]
@@ -349,7 +349,7 @@ const sentences = [
 {
   "c": "O uzun yolu yavaş yavaş yürüyor",
   "s": "Camina lentamente por el camino largo",
-  "g": "Tipo: Gramatical (Acusativo vs otros casos)",
+  "g": "Objeto definido y reduplicación de adjetivo con valor adverbial",
   "v": "yürümek: caminar",
   "h": "yolu",
   "alt": ["yola", "yolun", "yolda"]
@@ -357,7 +357,7 @@ const sentences = [
 {
   "c": "Biz genelde evde dinleniyoruz",
   "s": "Normalmente descansamos en casa",
-  "g": "Tipo: Semántica (Lógica de contexto)",
+  "g": "Caso locativo con concordancia semántica",
   "v": "dinlenmek: descansar",
   "h": "evde",
   "alt": ["sınavda", "otobüste", "derste"]
@@ -365,7 +365,7 @@ const sentences = [
 {
   "c": "Siz bu işi kolayca yapıyorsunuz",
   "s": "Hacéis este trabajo fácilmente",
-  "g": "Tipo: Gramatical (Adverbio de modo -ca vs otras formas)",
+  "g": "Objeto definido y adverbio de modo mediante sufijo -ca/-ce",
   "v": "yapmak: hacer",
   "h": "kolayca",
   "alt": ["kolay", "kolayda", "kolaydan"]
@@ -373,7 +373,7 @@ const sentences = [
 {
   "c": "Onlar yeni yerleri merakla keşfediyor",
   "s": "Descubren nuevos lugares con curiosidad",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Objeto definido y adverbio de modo mediante sufijo -la/-le",
   "v": "keşfetmek: descubrir",
   "h": "merakla",
   "alt": ["meraklı", "tuzluca", "pahalının"]
@@ -381,7 +381,7 @@ const sentences = [
 {
   "c": "Ben hafta içi erken yatıyorum",
   "s": "Me acuesto temprano entre semana",
-  "g": "Tipo: Semántica (Lógica temporal)",
+  "g": "Locución temporal de periodicidad y adverbio de tiempo",
   "v": "yatmak: acostarse",
   "h": "erken",
   "alt": ["yorgun", "tuzlu", "mavi"]
@@ -389,7 +389,7 @@ const sentences = [
 {
   "c": "Sen akşamları kitap okuyorsun",
   "s": "Lees libros por la noche",
-  "g": "Tipo: Gramatical (Objeto indefinido vs casos específicos)",
+  "g": "Plural de hábito y objeto indefinido",
   "v": "okumak: leer",
   "h": "kitap",
   "alt": ["kitabı", "kitaba", "kitaptan"]
@@ -397,7 +397,7 @@ const sentences = [
 {
   "c": "O sabah kahvesini sessizce içiyor",
   "s": "Bebe su café por la mañana en silencio",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Objeto definido y adverbio de modo mediante sufijo -ca/-ce",
   "v": "içmek: beber",
   "h": "kahvesini",
   "alt": ["kahve", "bulutu", "sessiz"]
@@ -405,7 +405,7 @@ const sentences = [
 {
   "c": "Biz büyük projeyi birlikte yapıyoruz",
   "s": "Hacemos el gran proyecto juntos",
-  "g": "Tipo: Semántica (Lógica de contexto laboral/escolar)",
+  "g": "Objeto definido con adjetivo y adverbio de compañía",
   "v": "yapmak: hacer",
   "h": "projeyi",
   "alt": ["çorbayı", "denizi", "rüzgarı"]
@@ -413,7 +413,7 @@ const sentences = [
 {
   "c": "Siz eski fotoğraflara dikkatlice bakıyorsunuz",
   "s": "Miráis fotos antiguas con atención",
-  "g": "Tipo: Gramatical (Dativo requerido por 'bakmak' vs otros casos)",
+  "g": "Adj + Dativo (bakmak rige -a/-e) y adverbio de modo (-ce/-ca)",
   "v": "bakmak: mirar",
   "h": "fotoğraflara",
   "alt": ["fotoğrafları", "fotoğraflarda", "fotoğraflardan"]
@@ -421,7 +421,7 @@ const sentences = [
 {
   "c": "Onlar parkta uzun süre oturuyor",
   "s": "Se sientan mucho tiempo en el parque",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Locativo (-ta) y locución de duración (uzun süre)",
   "v": "oturmak: sentarse/vivir",
   "h": "parkta",
   "alt": ["parkı", "bulutta", "çorbada"]
@@ -429,7 +429,7 @@ const sentences = [
 {
   "c": "Ben ders çalışırken müzik dinliyorum",
   "s": "Escucho música mientras estudio",
-  "g": "Tipo: Semántica (Lógica de actividad mientras se estudia)",
+  "g": "Gerundio temporal (-ken) y objeto indefinido",
   "v": "dinlemek: escuchar",
   "h": "müzik",
   "alt": ["uyku", "yemek", "futbol"]
@@ -437,7 +437,7 @@ const sentences = [
 {
   "c": "Sen dışarıda hızlıca yiyorsun",
   "s": "Comes rápido fuera",
-  "g": "Tipo: Gramatical (Locativo -da vs otros casos)",
+  "g": "Locativo (-da) y adverbio de modo (-ca/-ce)",
   "v": "yemek: comer",
   "h": "dışarıda",
   "alt": ["dışarıyı", "dışarıya", "dışarıdan"]
@@ -445,7 +445,7 @@ const sentences = [
 {
   "c": "O evde rahatça dinleniyor",
   "s": "Descansa cómodamente en casa",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Locativo (-de) y adverbio de modo (-ca/-ce)",
   "v": "dinlenmek: descansar",
   "h": "rahatça",
   "alt": ["rahat", "tuzluca", "pahalının"]
@@ -453,7 +453,7 @@ const sentences = [
 {
   "c": "Biz hafta sonu arkadaşlarla buluşuyoruz",
   "s": "Nos reunimos con amigos el fin de semana",
-  "g": "Tipo: Semántica (Lógica de reunión social)",
+  "g": "Sufijo instrumental (-la) con concordancia semántica",
   "v": "buluşmak: reunirse/quedar",
   "h": "arkadaşlarla",
   "alt": ["duvarlarla", "bulutlarla", "taşlarla"]
@@ -461,7 +461,7 @@ const sentences = [
 {
   "c": "Siz yeni filmi birlikte izliyorsunuz",
   "s": "Veis la nueva película juntos",
-  "g": "Tipo: Gramatical (Acusativo definido -i vs otros casos)",
+  "g": "Acusativo definido -i",
   "v": "izlemek: ver/mirar",
   "h": "filmi",
   "alt": ["filme", "filmde", "filmden"]
@@ -469,7 +469,7 @@ const sentences = [
 {
   "c": "Onlar sahilde yavaşça yürüyüş yapıyor",
   "s": "Pasean lentamente por la playa",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Adverbio de modo (-ca/-ce) con concordancia semántica",
   "v": "yürüyüş yapmak: pasear/hacer una caminata",
   "h": "yavaşça",
   "alt": ["yavaş", "lezzetlice", "tuzluca"]
@@ -477,7 +477,7 @@ const sentences = [
 {
   "c": "Ben sabahları erken kalkmayı seviyorum",
   "s": "Me gusta levantarme temprano por las mañanas",
-  "g": "Tipo: Semántica (Lógica de rutina matutina)",
+  "g": "Infinitivo sustantivado con acusativo y concordancia semántica",
   "v": "sevmek: amar/gustar",
   "h": "kalkmayı",
   "alt": ["uyumayı", "acıkmayı", "yorulmayı"]
@@ -485,7 +485,7 @@ const sentences = [
 {
   "c": "Sen kahveyi sıcak sıcak içiyorsun",
   "s": "Bebes el café bien caliente",
-  "g": "Tipo: Gramatical (Reduplicación de adjetivo vs otras formas)",
+  "g": "Objeto definido y reduplicación de adjetivo enfática",
   "v": "içmek: beber",
   "h": "sıcak sıcak",
   "alt": ["sıcakta", "sıcaktan", "sıcaklar"]
@@ -493,7 +493,7 @@ const sentences = [
 {
   "c": "O kitabı dikkatle bitiriyor",
   "s": "Termina el libro con atención",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Acusativo y sufijo instrumental de modo -le (excepción a la armonía vocálica dikkat → dikkatle)",
   "v": "bitirmek: terminar",
   "h": "dikkatle",
   "alt": ["dikkatli", "tuzluca", "mavi"]
@@ -501,7 +501,7 @@ const sentences = [
 {
   "c": "Biz akşamları uzun sohbet ediyoruz",
   "s": "Charlamos mucho por la noche (tenemos una larga charla)",
-  "g": "Tipo: Semántica (Lógica del verbo compuesto 'etmek')",
+  "g": "Concordancia semántica",
   "v": "sohbet etmek: charlar",
   "h": "sohbet",
   "alt": ["elma", "ayakkabı", "bulut"]
@@ -509,7 +509,7 @@ const sentences = [
 {
   "c": "Siz genelde sakin müzik dinliyorsunuz",
   "s": "Normalmente escucháis música tranquila",
-  "g": "Tipo: Gramatical (Adjetivo base vs otras formas)",
+  "g": "Adjetivo en función atributiva",
   "v": "dinlemek: escuchar",
   "h": "sakin",
   "alt": ["sakince", "sakinde", "sakinden"]
@@ -517,7 +517,7 @@ const sentences = [
 {
   "c": "Onlar sabah sporunu birlikte yapıyor",
   "s": "Hacen deporte por la mañana juntos",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Acusativo y concordancia semántica",
   "v": "yapmak: hacer",
   "h": "sporunu",
   "alt": ["spor", "tuzluca", "pahalının"]
@@ -525,7 +525,7 @@ const sentences = [
 {
   "c": "Ben kısa molalarla çalışıyorum",
   "s": "Trabajo con pequeñas pausas",
-  "g": "Tipo: Semántica (Lógica de ritmo de trabajo)",
+  "g": "Concordancia semántica",
   "v": "çalışmak: trabajar/estudiar",
   "h": "molalarla",
   "alt": ["uykularla", "rüyalarla", "bulutlarla"]
@@ -533,7 +533,7 @@ const sentences = [
 {
   "c": "Sen yeni kelimeleri hızlıca öğreniyorsun",
   "s": "Aprendes palabras nuevas rápidamente",
-  "g": "Tipo: Gramatical (Acusativo plural -leri vs otros casos)",
+  "g": "Acusativo plural -leri",
   "v": "öğrenmek: aprender",
   "h": "kelimeleri",
   "alt": ["kelimelere", "kelimelerde", "kelimelerden"]
@@ -541,7 +541,7 @@ const sentences = [
 {
   "c": "O şehre yavaş yavaş alışıyor",
   "s": "Se está acostumbrando a la ciudad poco a poco",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Alışmak rige dativo y caída vocálica (şehir --> şehre)",
   "v": "alışmak: acostumbrarse",
   "h": "şehre",
   "alt": ["şehri", "tuzluca", "pahalının"]
@@ -549,7 +549,7 @@ const sentences = [
 {
   "c": "Biz evde sıcak çay içiyoruz",
   "s": "Bebemos té caliente en casa",
-  "g": "Tipo: Semántica (Lógica de bebida que se sirve caliente)",
+  "g": "Concordancia semántica",
   "v": "içmek: beber",
   "h": "çay",
   "alt": ["tuz", "ekmek", "bulut"]
@@ -557,7 +557,7 @@ const sentences = [
 {
   "c": "Siz dikkatlice plan yapıyorsunuz",
   "s": "Planificáis con cuidado (hacéis planes)",
-  "g": "Tipo: Gramatical (Adverbio de modo -ce vs adjetivo base)",
+  "g": "Sufijo de modo -ce (adverbio)",
   "v": "plan yapmak: planificar/hacer planes",
   "h": "dikkatlice",
   "alt": ["dikkatli", "dikkatten", "dikkatte"]
@@ -565,7 +565,7 @@ const sentences = [
 {
   "c": "Onlar büyük salonda toplanıyor",
   "s": "Se reúnen en el gran salón",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Caso locativo -da y concordancia semántica",
   "v": "toplanmak: reunirse",
   "h": "salonda",
   "alt": ["salonu", "lezzetlice", "tuzluca"]
@@ -573,7 +573,7 @@ const sentences = [
 {
   "c": "Ben akşamları sessizce düşünüyorum",
   "s": "Pienso en silencio por la noche",
-  "g": "Tipo: Semántica (Lógica de actividad introspectiva)",
+  "g": "Concordancia semántica",
   "v": "düşünmek: pensar",
   "h": "sessizce",
   "alt": ["tuzlu", "mavi", "hızlıca"]
@@ -581,7 +581,7 @@ const sentences = [
 {
   "c": "Sen sabahları biraz geç kalkıyorsun",
   "s": "Te levantas un poco tarde por la mañana",
-  "g": "Tipo: Gramatical (Adverbio temporal vs sufijo de caso)",
+  "g": "Adverbio temporal independiente (geç vs sufijos de caso))",
   "v": "kalkmak: levantarse",
   "h": "geç",
   "alt": ["geçe", "geçte", "geçten"]
@@ -589,7 +589,7 @@ const sentences = [
 {
   "c": "O uzun videoları dikkatlice izliyor",
   "s": "Ve vídeos largos con atención",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Acusativo plural -ları y concordancia semántica",
   "v": "izlemek: ver/mirar",
   "h": "videoları",
   "alt": ["videolara", "tuzluca", "pahalının"]
@@ -597,7 +597,7 @@ const sentences = [
 {
   "c": "Biz rahat bir ortamda çalışıyoruz",
   "s": "Trabajamos en un ambiente tranquilo",
-  "g": "Tipo: Semántica (Lógica de contexto para trabajar)",
+  "g": "Concordancia semántica",
   "v": "çalışmak: trabajar/estudiar",
   "h": "ortamda",
   "alt": ["çorbada", "denizde", "bulutta"]
@@ -605,7 +605,7 @@ const sentences = [
 {
   "c": "Siz eski arkadaşlarla sık görüşüyorsunuz",
   "s": "Os veis a menudo con viejos amigos",
-  "g": "Tipo: Gramatical (Adverbio de frecuencia vs sufijos de caso)",
+  "g": "Adverbio de frecuencia vs sufijos de caso",
   "v": "görüşmek: verse/reunirse",
   "h": "sık",
   "alt": ["sıkta", "sıkla", "sıkı"]
@@ -613,7 +613,7 @@ const sentences = [
 {
   "c": "Onlar hızlıca yemek hazırlıyor",
   "s": "Preparan la comida rápidamente",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Sufijo de modo -ca (adverbio) y concordancia semántica",
   "v": "hazırlamak: preparar",
   "h": "hızlıca",
   "alt": ["hızlı", "tuzluca", "pahalının"]
@@ -621,7 +621,7 @@ const sentences = [
 {
   "c": "Ben çok iyi bir öğrenciyim",
   "s": "Soy un muy buen estudiante",
-  "g": "Tipo: Semántica (Lógica de identidad en contexto de aprendizaje)",
+  "g": "Concordancia semántica",
   "v": "öğrenci olmak: ser estudiante",
   "h": "öğrenciyim",
   "alt": ["masayım", "elmayım", "bulutum"]
@@ -629,7 +629,7 @@ const sentences = [
 {
   "c": "Sen çok çalışkan bir insansın",
   "s": "Eres una persona muy trabajadora",
-  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona -sin vs otros sufijos)",
+  "g": "Sufijo personal de 2ª persona -sin vs otros sufijos",
   "v": "insan olmak: ser persona",
   "h": "insansın",
   "alt": ["insanım", "insanız", "insanlar"]
@@ -637,7 +637,7 @@ const sentences = [
 {
   "c": "O çok iyi bir öğretmen",
   "s": "Es un muy buen profesor",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Sustantivo en forma base y concordancia semántica",
   "v": "öğretmen olmak: ser profesor",
   "h": "öğretmen",
   "alt": ["öğretmence", "tuzluca", "pahalının"]
@@ -645,7 +645,7 @@ const sentences = [
 {
   "c": "Biz mutlu bir aileyiz",
   "s": "Somos una familia feliz",
-  "g": "Tipo: Semántica (Lógica de relación afectiva)",
+  "g": "Concordancia semántica",
   "v": "aile olmak: ser una familia",
   "h": "aileyiz",
   "alt": ["meyveyiz", "eşyayız", "binayız"]
@@ -653,7 +653,7 @@ const sentences = [
 {
   "c": "Siz çok dikkatli insanlarsınız",
   "s": "Sois personas muy cuidadosas",
-  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona plural -sınız vs otros sujetos)",
+  "g": "Sufijo personal de 2ª persona plural -sınız vs otros sufijos",
   "v": "insan olmak: ser personas",
   "h": "insanlarsınız",
   "alt": ["insanlarsın", "insanlarız", "insanlardım"]
@@ -661,7 +661,7 @@ const sentences = [
 {
   "c": "Onlar çok iyi arkadaşlar",
   "s": "Son muy buenos amigos",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Plural nominal -lar",
   "v": "arkadaş olmak: ser amigos",
   "h": "arkadaşlar",
   "alt": ["arkadaştan", "tuzluca", "pahalının"]
@@ -669,7 +669,7 @@ const sentences = [
 {
   "c": "Ben bugün biraz yorgunum",
   "s": "Hoy estoy un poco cansado",
-  "g": "Tipo: Semántica (Lógica de estado físico incompatible)",
+  "g": "Concordancia semántica",
   "v": "yorgun olmak: estar cansado",
   "h": "yorgunum",
   "alt": ["pembeyim", "tuzluyum", "ekşiyim"]
@@ -677,7 +677,7 @@ const sentences = [
 {
   "c": "Sen gerçekten çok sabırlısın",
   "s": "Eres realmente muy paciente",
-  "g": "Tipo: Gramatical (Sufijo personal de 2ª persona -sın vs otros sujetos)",
+  "g": "Sufijo personal de 2ª persona -sın vs otros sujetos",
   "v": "sabırlı olmak: ser paciente",
   "h": "sabırlısın",
   "alt": ["sabırlıyım", "sabırlıyız", "sabırlılar"]
@@ -685,7 +685,7 @@ const sentences = [
 {
   "c": "O evde yalnız",
   "s": "Está solo en casa",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Adjetivo en forma base",
   "v": "yalnız olmak: estar solo",
   "h": "yalnız",
   "alt": ["yalnızca", "tuzluca", "pahalının"]
@@ -693,7 +693,7 @@ const sentences = [
 {
   "c": "Biz burada hazırız",
   "s": "Estamos listos aquí",
-  "g": "Tipo: Semántica (Lógica de estado situacional)",
+  "g": "Concordancia semántica",
   "v": "hazır olmak: estar listo",
   "h": "hazırız",
   "alt": ["pahalıyız", "tuzluyuz", "mavisiniz"]
@@ -701,7 +701,7 @@ const sentences = [
 {
   "c": "Ben sabahları kahveyi sıcak içiyorum",
   "s": "Por las mañanas bebo el café caliente",
-  "g": "Tipo: Gramatical (Acusativo definido -i vs otros casos)",
+  "g": "Acusativo definido -i vs otros casos",
   "v": "içmek: beber",
   "h": "kahveyi",
   "alt": ["kahveye", "kahvede", "kahveden"]
@@ -709,7 +709,7 @@ const sentences = [
 {
   "c": "Sen okula genelde erken gidiyorsun",
   "s": "Sueles ir temprano a la escuela",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Caso dativo -a",
   "v": "gitmek: ir",
   "h": "okula",
   "alt": ["okulun", "tuzluca", "pahalının"]
@@ -717,7 +717,7 @@ const sentences = [
 {
   "c": "O kitabı dikkatlice okuyor",
   "s": "Lee el libro con atención",
-  "g": "Tipo: Semántica (Lógica de modo incompatible)",
+  "g": "Concordancia semántica",
   "v": "okumak: leer",
   "h": "dikkatlice",
   "alt": ["lezzetlice", "tuzluca", "mavi"]
@@ -725,7 +725,7 @@ const sentences = [
 {
   "c": "Biz akşam yemeğini birlikte yiyoruz",
   "s": "Cenamos juntos por la noche",
-  "g": "Tipo: Gramatical (Acusativo posesivo -i-n-i vs otros casos)",
+  "g": "Acusativo posesivo -i-n-i vs otros casos",
   "v": "yemek: comer/cenar",
   "h": "yemeğini",
   "alt": ["yemeğine", "yemeğinde", "yemeğinden"]
@@ -733,7 +733,7 @@ const sentences = [
 {
   "c": "Siz eski şarkıları keyifle dinliyorsunuz",
   "s": "Disfrutáis escuchando canciones antiguas",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Sufijo instrumental -le (modo)",
   "v": "dinlemek: escuchar",
   "h": "keyifle",
   "alt": ["keyifli", "tuzluca", "pahalının"]
@@ -741,7 +741,7 @@ const sentences = [
 {
   "c": "Onlar parkta yavaş yavaş yürüyor",
   "s": "Caminan lentamente por el parque",
-  "g": "Tipo: Semántica (Lógica de movimiento físico)",
+  "g": "Concordancia semántica",
   "v": "yürümek: caminar",
   "h": "yavaş yavaş",
   "alt": ["acı acı", "tuzlu tuzlu", "mavi mavi"]
@@ -749,7 +749,7 @@ const sentences = [
 {
   "c": "Ben hızlıca hazırlanıyorum",
   "s": "Me preparo rápidamente",
-  "g": "Tipo: Gramatical (Adverbio de modo -ca vs adjetivo base)",
+  "g": "Adverbio de modo -ca vs adjetivo base",
   "v": "hazırlanmak: prepararse",
   "h": "hızlıca",
   "alt": ["hızlı", "hızlıda", "hızlıdan"]
@@ -757,7 +757,7 @@ const sentences = [
 {
   "c": "Sen sessizce çalışıyorsun",
   "s": "Trabajas en silencio",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Sufijo de modo -ce",
   "v": "çalışmak: trabajar",
   "h": "sessizce",
   "alt": ["sessiz", "tuzluca", "pahalının"]
@@ -765,7 +765,7 @@ const sentences = [
 {
   "c": "O yeni filmi merakla izliyor",
   "s": "Ve la nueva película con curiosidad",
-  "g": "Tipo: Semántica (Lógica de actitud emocional)",
+  "g": "Concordancia semántica",
   "v": "izlemek: ver/mirar",
   "h": "merakla",
   "alt": ["tuzla", "bulutla", "ekmekle"]
@@ -773,7 +773,7 @@ const sentences = [
 {
   "c": "Biz hafta sonu birlikte geziyoruz",
   "s": "Salimos juntos (paseamos) el fin de semana",
-  "g": "Tipo: Gramatical (Sufijo personal de 1ª persona plural -iyoruz vs otros sujetos)",
+  "g": "Sufijo personal de 1ª persona plural -iyoruz vs otros sujetos",
   "v": "gezmek: pasear/viajar",
   "h": "geziyoruz",
   "alt": ["geziyorsun", "geziyorlar", "geziyorsunuz"]
@@ -781,7 +781,7 @@ const sentences = [
 {
   "c": "Siz kahvaltıyı genelde evde yapıyorsunuz",
   "s": "Normalmente desayunáis en casa",
-  "g": "Tipo: Mezclado (Gramática y Semántica)",
+  "g": "Sufijo de acusativo -yı",
   "v": "kahvaltı yapmak: desayunar",
   "h": "kahvaltıyı",
   "alt": ["kahvaltıya", "tuzluca", "pahalının"]
@@ -789,7 +789,7 @@ const sentences = [
 {
   "c": "Onlar büyük parkta oturuyor",
   "s": "Se sientan en el gran parque",
-  "g": "Tipo: Semántica (Lógica de ubicación física)",
+  "g": "Concordancia semántica",
   "v": "oturmak: sentarse/vivir",
   "h": "parkta",
   "alt": ["çorbada", "uykuda", "fikirde"]
